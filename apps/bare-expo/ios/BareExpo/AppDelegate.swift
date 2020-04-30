@@ -7,10 +7,12 @@
 //
 
 import Foundation
+import EXDevMenu
 
 @UIApplicationMain
-class AppDelegate: UMAppDelegateWrapper {
+class AppDelegate: UMAppDelegateWrapper, DevMenuDelegateProtocol {
   var moduleRegistryAdapter: UMModuleRegistryAdapter!
+  var bridge: RCTBridge?
   
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     
@@ -28,7 +30,10 @@ class AppDelegate: UMAppDelegateWrapper {
       
       window?.rootViewController = rootViewController
       window?.makeKeyAndVisible()
+      self.bridge = bridge
     }
+
+    DevMenuManager.shared.delegate = self
 
     super.application(application, didFinishLaunchingWithOptions: launchOptions)
     
@@ -64,6 +69,29 @@ class AppDelegate: UMAppDelegateWrapper {
                              #selector(UIResponder.motionEnded(_:with:)),
                              Selector(("RCT_motionEnded:withEvent:")))
     }
+  }
+
+  // MARK: DevMenuDelegateProtocol
+
+  func appBridge(forDevMenuManager manager: DevMenuManager) -> AnyObject? {
+    return self.bridge
+  }
+
+  func appInfo(forDevMenuManager manager: DevMenuManager) -> [String : Any]? {
+    return nil
+  }
+
+  func devMenuManager(_ manager: DevMenuManager, canChangeVisibility visible: Bool) -> Bool {
+    return true
+  }
+
+  @available(iOS 12.0, *)
+  func userInterfaceStyle(forDevMenuManager manager: DevMenuManager) -> UIUserInterfaceStyle {
+    return .unspecified
+  }
+
+  func shouldShowOnboarding(manager: DevMenuManager) -> Bool {
+    return true
   }
 }
 

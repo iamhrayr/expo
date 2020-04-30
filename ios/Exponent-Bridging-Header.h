@@ -4,5 +4,6 @@
 
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
+#import "EXKernel.h"
 
 #import <UMCore/UMAppDelegateWrapper.h>

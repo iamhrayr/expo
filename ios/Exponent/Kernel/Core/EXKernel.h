@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
 + (instancetype)sharedInstance;
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps;
+- (void)copyManifestUrlToClipboard;
 - (void)switchTasks;
 - (void)reloadAppWithExperienceId:(NSString *)experienceId; // called by Updates.reload
 - (void)reloadAppFromCacheWithExperienceId:(NSString *)experienceId; // called by Updates.reloadFromCache

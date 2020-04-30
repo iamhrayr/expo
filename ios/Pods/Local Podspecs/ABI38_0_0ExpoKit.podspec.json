@@ -14,6 +14,9 @@
   "source": {
     "git": "http://github.com/expo/expo.git"
   },
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES"
+  },
   "subspecs": [
     {
       "name": "Expo",
@@ -92,6 +95,9 @@
 
         ],
         "ABI38_0_0EXDevice": [
+
+        ],
+        "EXDevMenu": [
 
         ],
         "ABI38_0_0EXDocumentPicker": [

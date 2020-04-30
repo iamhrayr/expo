@@ -12,6 +12,7 @@
 #import "ABI38_0_0EXUnversioned.h"
 #import "ABI38_0_0EXScopedFileSystemModule.h"
 #import "ABI38_0_0EXTest.h"
+#import "ABI38_0_0EXDevMenuExtensions.h"
 
 #import <ABI38_0_0React/ABI38_0_0RCTAssert.h>
 #import <ABI38_0_0React/ABI38_0_0RCTBridge.h>
@@ -365,6 +366,7 @@ void ABI38_0_0EXRegisterScopedModule(Class moduleClass, ...)
   NSString *localStorageDirectory = [fileSystemModule.documentDirectory stringByAppendingPathComponent:@"RCTAsyncLocalStorage"];
   [extraModules addObject:[[ABI38_0_0RCTAsyncLocalStorage alloc] initWithStorageDirectory:localStorageDirectory]];
 
+  [extraModules addObject:[ABI38_0_0EXDevMenuExtensions new]];
   return extraModules;
 }
 

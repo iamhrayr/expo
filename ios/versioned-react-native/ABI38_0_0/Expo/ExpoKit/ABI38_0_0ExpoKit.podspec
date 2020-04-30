@@ -14,6 +14,8 @@ Pod::Spec.new do |s|
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
 
+  s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
+
   s.subspec "Expo" do |ss|
     ss.source_files     = "Core/**/*.{h,m,mm}"
 
@@ -42,6 +44,7 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI38_0_0EXContacts"
     ss.dependency         "ABI38_0_0EXCrypto"
     ss.dependency         "ABI38_0_0EXDevice"
+    ss.dependency         "EXDevMenu"
     ss.dependency         "ABI38_0_0EXDocumentPicker"
     ss.dependency         "ABI38_0_0EXErrorRecovery"
     ss.dependency         "ABI38_0_0EXFaceDetector"

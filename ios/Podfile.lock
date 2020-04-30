@@ -1198,6 +1198,7 @@ PODS:
     - AppAuth
     - Branch
     - EXBranch
+    - EXDevMenu
     - EXGL_CPP
     - FBAudienceNetwork
     - FBSDKCoreKit
@@ -1581,6 +1582,8 @@ PODS:
     - UMCore
   - EXDevice (2.2.1):
     - UMCore
+  - EXDevMenu (0.1.0):
+    - React
   - EXDocumentPicker (8.2.1):
     - UMCore
     - UMFileSystemInterface
@@ -2447,6 +2450,7 @@ DEPENDENCIES:
   - EXContacts (from `../packages/expo-contacts/ios`)
   - EXCrypto (from `../packages/expo-crypto/ios`)
   - EXDevice (from `../packages/expo-device/ios`)
+  - EXDevMenu (from `../packages/expo-dev-menu`)
   - EXDocumentPicker (from `../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../packages/expo-error-recovery/ios`)
   - EXFacebook (from `../packages/expo-facebook/ios`)
@@ -3183,6 +3187,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-crypto/ios"
   EXDevice:
     :path: "../packages/expo-device/ios"
+  EXDevMenu:
+    :path: "../packages/expo-dev-menu"
   EXDocumentPicker:
     :path: "../packages/expo-document-picker/ios"
   EXErrorRecovery:
@@ -3572,7 +3578,7 @@ SPEC CHECKSUMS:
   ABI38_0_0EXNetwork: f4232f717bb866690bbfd9be0cb67bb831caf9c1
   ABI38_0_0EXNotifications: 478a2998bd524c65e254a6f5ab85cc4011659895
   ABI38_0_0EXPermissions: e7a5cbe07c89f0accaadd599a7ae180ca558f64c
-  ABI38_0_0ExpoKit: 70fa49052dba74233bec2bf6cc5c001a9c34096a
+  ABI38_0_0ExpoKit: 2fb2c85823c3af92dd12e800c36982594fa6142b
   ABI38_0_0EXPrint: 6ad34604d84744a9ed2d0ebda2873d0eb6ebd694
   ABI38_0_0EXRandom: c211900ed39eae32cbad83a69493f0d40ef5243c
   ABI38_0_0EXScreenCapture: 536bb9191edf6e07684825cf974a55fd89395f84
@@ -3651,6 +3657,7 @@ SPEC CHECKSUMS:
   EXContacts: 9ecc819adfb7690ed90ebcaf93d23ac84fe957f1
   EXCrypto: 867e1d45d513e39ab9d7706232435edb1cf756cd
   EXDevice: befd3b2619915e615c3753c9f83309808aa0cdf5
+  EXDevMenu: 56da552e8d24014dfd5361e243a0d0db94668bac
   EXDocumentPicker: 38b1bc0995d3b8c879142be6d6753866484025a8
   EXErrorRecovery: 500f1d4231c534f415e86caeb3fc677c7f5dd23c
   EXFacebook: 3c124265fb7230cf1071329208b765e0e187789e
@@ -3758,6 +3765,6 @@ SPEC CHECKSUMS:
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 2b628561b2a30b9c8498cb3ce3993e0cb02ceb26
+PODFILE CHECKSUM: a3b8729f492cd42758ea0a36c1075cafa5761f17
 
 COCOAPODS: 1.9.2

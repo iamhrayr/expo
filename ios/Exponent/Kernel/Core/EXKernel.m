@@ -20,10 +20,9 @@
 
 #ifndef EX_DETACHED
 // Kernel is DevMenu's delegate only in non-detached builds.
-#import "EXDevMenuManager.h"
-#import "EXDevMenuDelegateProtocol.h"
+@import EXDevMenu;
 
-@interface EXKernel () <EXDevMenuDelegateProtocol>
+@interface EXKernel () <DevMenuDelegateProtocol>
 @end
 #endif
 
@@ -75,7 +74,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 #ifndef EX_DETACHED
     // Set the delegate of dev menu manager. Maybe it should be a separate class? Will see later once the delegate protocol gets too big.
-    [[EXDevMenuManager sharedInstance] setDelegate:self];
+    [[DevMenuManager shared] setDelegate:self];
 #endif
 
     // register for notifications to request reloading the visible app
@@ -266,6 +265,15 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   return record;
 }
 
+#pragma mark - API
+
+- (void)copyManifestUrlToClipboard
+{
+  NSString *manifestUrl = _visibleApp.appLoader.manifestUrl.absoluteString;
+  if (manifestUrl) {
+    [UIPasteboard.generalPasteboard setString:manifestUrl];
+  }
+}
 
 - (void)reloadVisibleApp
 {
@@ -283,9 +291,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   }
   
   if (_visibleApp != _appRegistry.homeAppRecord) {
-#ifndef EX_DETACHED // Just to compile without access to EXDevMenuManager, we wouldn't get here either way because browser controller is unset in this case.
+#ifndef EX_DETACHED // Just to compile without access to DevMenuManager, we wouldn't get here either way because browser controller is unset in this case.
     [EXUtil performSynchronouslyOnMainThread:^{
-      [[EXDevMenuManager sharedInstance] toggle];
+      [[DevMenuManager shared] toggleMenu];
     }];
 #endif
   } else {
@@ -416,14 +424,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 }
 
 #ifndef EX_DETACHED
-#pragma mark - EXDevMenuDelegateProtocol
+#pragma mark - DevMenuDelegateProtocol
 
-- (RCTBridge *)mainBridgeForDevMenuManager:(EXDevMenuManager *)manager
-{
-  return _appRegistry.homeAppRecord.appManager.reactBridge;
-}
-
-- (nullable RCTBridge *)appBridgeForDevMenuManager:(EXDevMenuManager *)manager
+- (nullable id)appBridgeForDevMenuManager:(nonnull DevMenuManager *)manager
 {
   if (_visibleApp == _appRegistry.homeAppRecord) {
     return nil;
@@ -431,9 +434,29 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   return _visibleApp.appManager.reactBridge;
 }
 
-- (BOOL)devMenuManager:(EXDevMenuManager *)manager canChangeVisibility:(BOOL)visibility
+- (nullable NSDictionary<NSString *, NSObject *> *)appInfoForDevMenuManager:(nonnull DevMenuManager *)manager
+{
+  return @{
+    @"appName": _visibleApp.appLoader.manifest[@"name"],
+    @"manifestUrl": _visibleApp.appLoader.manifestUrl.absoluteString,
+    @"manifest": RCTNullIfNil(_visibleApp.appLoader.manifest),
+  };
+}
+
+- (BOOL)devMenuManager:(DevMenuManager *)manager canChangeVisibility:(BOOL)visibility
 {
   return !visibility || _visibleApp != _appRegistry.homeAppRecord;
+}
+
+- (BOOL)devMenuManager:(DevMenuManager *)manager willDispatchAction:(DevMenuAction *)action
+{
+  // `reload` action is automatically added by the dev menu,
+  // however in the client we also need to reload the manifest.
+  if ([action.actionId isEqualToString:@"reload"]) {
+    [self reloadVisibleApp];
+    return NO;
+  }
+  return YES;
 }
 
 #endif

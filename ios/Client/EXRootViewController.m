@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 @import UIKit;
+@import EXDevMenu;
 
 #import "EXAppViewController.h"
 #import "EXHomeAppManager.h"
@@ -11,7 +12,6 @@
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXRootViewController.h"
-#import "EXDevMenuManager.h"
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)moveHomeToVisible
 {
-  [[EXDevMenuManager sharedInstance] close];
+  [[DevMenuManager shared] closeMenu];
   [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
 }
 
@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 // because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
 - (void)reloadVisibleApp
 {
-  [[EXDevMenuManager sharedInstance] close];
+  [[DevMenuManager shared] closeMenu];
 
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (!self.isNuxFinished
       && appRecord == [EXKernel sharedInstance].visibleApp
       && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
-    [[EXDevMenuManager sharedInstance] open];
+    [[DevMenuManager shared] openMenu];
   }
 }
 

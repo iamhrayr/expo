@@ -1,17 +1,17 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import <React/RCTEventDispatcher.h>
+
 #import "EXEnvironment.h"
 #import "EXHomeModule.h"
 #import "EXSession.h"
 #import "EXUnversioned.h"
 #import "EXClientReleaseType.h"
-#import "EXKernelDevKeyCommands.h"
+#import "EXKernel.h"
 
 #ifndef EX_DETACHED
-#import "EXDevMenuManager.h"
+@import EXDevMenu;
 #endif
-
-#import <React/RCTEventDispatcher.h>
 
 @interface EXHomeModule ()
 
@@ -34,9 +34,6 @@
     _eventFailureBlocks = [NSMutableDictionary dictionary];
     _sdkVersions = params[@"constants"][@"supportedExpoSdks"];
     _delegate = kernelServiceInstance;
-
-    // Register keyboard commands like Cmd+D for the simulator.
-    [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
   }
   return self;
 }
@@ -87,20 +84,6 @@
 }
 
 /**
- * Requests JavaScript side to start closing the dev menu (start the animation or so).
- * Fully closes the dev menu once it receives a response from that event.
- */
-- (void)requestToCloseDevMenu
-{
-#ifndef EX_DETACHED
-  void (^callback)(id) = ^(id arg){
-    [[EXDevMenuManager sharedInstance] closeWithoutAnimation];
-  };
-  [self dispatchJSEvent:@"requestToCloseDevMenu" body:nil onSuccess:callback onFailure:callback];
-#endif
-}
-
-/**
  *  Duplicates Linking.openURL but does not validate that this is an exponent URL;
  *  in other words, we just take your word for it and never hand it off to iOS.
  *  Used by the home screen URL bar.
@@ -118,98 +101,14 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
   }
 }
 
-/**
- * Returns boolean value determining whether the current app supports developer tools.
- */
-RCT_REMAP_METHOD(doesCurrentTaskEnableDevtoolsAsync,
-                 doesCurrentTaskEnableDevtoolsWithResolver:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
-{
-  if (_delegate) {
-    resolve(@([_delegate homeModuleShouldEnableDevtools:self]));
-  } else {
-    // don't reject, just disable devtools
-    resolve(@NO);
-  }
-}
-
-/**
- * Gets a dictionary of dev menu options available in the currently shown experience,
- * If the experience doesn't support developer tools just returns an empty response.
- */
-RCT_REMAP_METHOD(getDevMenuItemsToShowAsync,
-                 getDevMenuItemsToShowWithResolver:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
-{
-  if (_delegate && [_delegate homeModuleShouldEnableDevtools:self]) {
-    resolve([_delegate devMenuItemsForHomeModule:self]);
-  } else {
-    // don't reject, just show no devtools
-    resolve(@{});
-  }
-}
-
-/**
- * Function called every time the dev menu option is selected.
- */
-RCT_EXPORT_METHOD(selectDevMenuItemWithKeyAsync:(NSString *)key)
-{
-  if (_delegate) {
-    [_delegate homeModule:self didSelectDevMenuItemWithKey:key];
-  }
-}
-
-/**
- * Reloads currently shown app with the manifest.
- */
-RCT_EXPORT_METHOD(reloadAppAsync)
-{
-  if (_delegate) {
-    [_delegate homeModuleDidSelectRefresh:self];
-  }
-}
-
-/**
- * Immediately closes the dev menu if it's visible.
- * Note: It skips the animation that would have been applied by the JS side.
- */
-RCT_EXPORT_METHOD(closeDevMenuAsync)
-{
-#ifndef EX_DETACHED
-  [[EXDevMenuManager sharedInstance] closeWithoutAnimation];
-#endif
-}
-
-/**
- * Goes back to the home app.
- */
-RCT_EXPORT_METHOD(goToHomeAsync)
-{
-  if (_delegate) {
-    [_delegate homeModuleDidSelectGoToHome:self];
-  }
-}
-
-/**
- * Opens QR scanner to open another app by scanning its QR code.
- */
-RCT_EXPORT_METHOD(selectQRReader)
-{
-  if (_delegate) {
-    [_delegate homeModuleDidSelectQRReader:self];
-  }
-}
-
 RCT_REMAP_METHOD(getDevMenuSettingsAsync,
                  getDevMenuSettingsAsync:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
 #ifndef EX_DETACHED
-  EXDevMenuManager *manager = [EXDevMenuManager sharedInstance];
-
   resolve(@{
-    @"motionGestureEnabled": @(manager.interceptMotionGesture),
-    @"touchGestureEnabled": @(manager.interceptTouchGesture),
+    @"motionGestureEnabled": @(DevMenuManager.interceptsMotionGestures),
+    @"touchGestureEnabled": @(DevMenuManager.interceptsTouchGestures),
   });
 #else
   resolve(@{});
@@ -223,12 +122,10 @@ RCT_REMAP_METHOD(setDevMenuSettingAsync,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
 #ifndef EX_DETACHED
-  EXDevMenuManager *manager = [EXDevMenuManager sharedInstance];
-
   if ([key isEqualToString:@"motionGestureEnabled"]) {
-    manager.interceptMotionGesture = [value boolValue];
+    DevMenuManager.interceptsMotionGestures = [value boolValue];
   } else if ([key isEqualToString:@"touchGestureEnabled"]) {
-    manager.interceptTouchGesture = [value boolValue];
+    DevMenuManager.interceptsTouchGestures = [value boolValue];
   } else {
     return reject(@"ERR_DEV_MENU_SETTING_NOT_EXISTS", @"Specified dev menu setting doesn't exist.", nil);
   }
@@ -268,33 +165,6 @@ RCT_REMAP_METHOD(removeSessionAsync,
     resolve(nil);
   } else {
     reject(@"ERR_SESSION_NOT_REMOVED", @"Could not remove session", error);
-  }
-}
-
-/**
- * Checks whether the dev menu onboarding is already finished.
- * Onboarding is a screen that shows the dev menu to the user that opens any experience for the first time.
-*/
-RCT_REMAP_METHOD(getIsOnboardingFinishedAsync,
-                 getIsOnboardingFinishedWithResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject)
-{
-  if (_delegate) {
-    BOOL isFinished = [_delegate homeModuleShouldFinishNux:self];
-    resolve(@(isFinished));
-  } else {
-    resolve(@(NO));
-  }
-}
-
-/**
- * Sets appropriate setting in user defaults that user's onboarding has finished.
- */
-RCT_REMAP_METHOD(setIsOnboardingFinishedAsync,
-                 setIsOnboardingFinished:(BOOL)isOnboardingFinished)
-{
-  if (_delegate) {
-    [_delegate homeModule:self didFinishNux:isOnboardingFinished];
   }
 }
 

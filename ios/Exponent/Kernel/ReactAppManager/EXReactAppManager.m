@@ -19,6 +19,8 @@
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
 
+@import EXDevMenu;
+
 @interface EXVersionManager (Legacy)
 // TODO: remove after non-unimodules SDK versions are dropped
 
@@ -501,18 +503,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   if ([self enablesDeveloperTools]) {
     [self.versionManager toggleElementInspectorForBridge:self.reactBridge];
   }
-}
-
-- (NSDictionary<NSString *, NSString *> *)devMenuItems
-{
-  return [self.versionManager devMenuItemsForBridge:self.reactBridge];
-}
-
-- (void)selectDevMenuItemWithKey:(NSString *)key
-{
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self.versionManager selectDevMenuItemWithKey:key onBridge:self.reactBridge];
-  });
 }
 
 #pragma mark - RN configuration

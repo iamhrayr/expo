@@ -42,6 +42,7 @@ const screens = [
   'Constants',
   'Contacts',
   'Device',
+  'DevMenu',
   'DocumentPicker',
   'FacebookLogin',
   'FaceDetector',

@@ -12,6 +12,7 @@
 #import "EXUnversioned.h"
 #import "EXScopedFileSystemModule.h"
 #import "EXTest.h"
+#import "Exponent-Swift.h"
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
@@ -365,6 +366,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   NSString *localStorageDirectory = [fileSystemModule.documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
   [extraModules addObject:[[RCTAsyncLocalStorage alloc] initWithStorageDirectory:localStorageDirectory]];
 
+  [extraModules addObject:[EXDevMenuExtensions new]];
   return extraModules;
 }
 

@@ -24,6 +24,7 @@ const Constants = optionalRequire(() => require('../screens/ConstantsScreen'));
 const ContactDetail = optionalRequire(() => require('../screens/Contacts/ContactDetailScreen'));
 const Contacts = optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
 const Device = optionalRequire(() => require('../screens/DeviceScreen'));
+const DevMenu = optionalRequire(() => require('../screens/DevMenuScreen'));
 const DocumentPicker = optionalRequire(() => require('../screens/DocumentPickerScreen'));
 const Events = optionalRequire(() => require('../screens/EventsScreen'));
 const FacebookLogin = optionalRequire(() => require('../screens/FacebookLoginScreen'));
@@ -83,6 +84,7 @@ const optionalScreens: {
   Branch,
   Brightness,
   Device,
+  DevMenu,
   DocumentPicker,
   Localization,
   FacebookLogin,
