@@ -1,7 +1,11 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError, EventEmitter } from '@unimodules/core';
 import { PermissionStatus, } from 'unimodules-permissions-interface';
 import ExponentImagePicker from './ExponentImagePicker';
 import { MediaTypeOptions, VideoExportPreset, } from './ImagePicker.types';
+const ImagePickerEventEmitter = new EventEmitter(ExponentImagePicker);
+export function subscribe(eventListener) {
+    ImagePickerEventEmitter.addListener('Expo.imagepicker.onresult', eventListener);
+}
 export async function getCameraPermissionsAsync() {
     return ExponentImagePicker.getCameraPermissionsAsync();
 }
