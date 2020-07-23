@@ -89,7 +89,7 @@
     "react-native-platform-touchable": "^1.1.1",
     "react-native-redash": "^14.1.1",
     "react-native-safe-area-view": "^0.14.8",
-    "react-native-web": "~0.12.0",
+    "react-native-web": "~0.13.0",
     "react-navigation-shared-element": "^3.0.0",
     "regl": "^1.3.0",
     "three": "^0.115.0",
